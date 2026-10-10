@@ -4,6 +4,8 @@ import com.app.ecom.User;
 import com.app.ecom.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -11,32 +13,42 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/users")
 public class UserController {
 
     @Autowired
     private final UserService userService;
 
 
-    @GetMapping("/api/users")
-    public List<User> getAllUsers(){
-        return userService.buscarAllUser();
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers(){
+        return new ResponseEntity<>(userService.buscarAllUser(), HttpStatus.OK);
     }
-    @GetMapping("/api/users/{id}")
-    public User getUsers(@PathVariable Long id){
-        return userService.buscarUser(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id){
+        return userService.buscarUser(id).
+                map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-    @PostMapping("/api/users")
-    public String createUsers(@RequestBody User user){
+    @PostMapping
+    public ResponseEntity<String> createUsers(@RequestBody User user){
         userService.addUser(user);
-        return "User Added successfully";
+        return ResponseEntity.ok("User Added successfully");
     }
-    @PutMapping("/api/users/{id}")
-    public User updateUser(@PathVariable Long id,
-                           @RequestBody User userUpdate){
-        return userService.updateUser(id,userUpdate);
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id,
+                                             @RequestBody User updateUser){
+        boolean updated = userService.updateUser(id, updateUser);
+        if(updated){
+            return  ResponseEntity.ok("User updated successfully");
+        }
+        return ResponseEntity.notFound().build();
     }
-    @DeleteMapping("api/users/{id}")
-    public void deleteUser(@PathVariable Long id){
-        userService.deleteUser(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        boolean deletado = userService.deleteUser(id);
+        if (deletado){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
