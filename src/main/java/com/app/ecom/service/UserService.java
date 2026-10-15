@@ -1,47 +1,50 @@
 package com.app.ecom.service;
 
 import com.app.ecom.User;
-import org.springframework.http.ResponseEntity;
+import com.app.ecom.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
+    private final UserRepository userRepository;
 
-    private List<User> userList = new ArrayList<>();
-    private Long nextId = 1L;
+    //private List<User> userList = new ArrayList<>();
+    //private Long nextId = 1L;
 
-    public List<User> buscarAllUser(){
-        return userList;
+    public List<User> fetchAllUsers(){
+        return userRepository.findAll();
+    }
+    public Optional<User> fetchUser(Long id) {
+        return userRepository.findById(id);
     }
 
     public void addUser(User user){
-        user.setId(nextId++);// id automatico
-        userList.add(user);
+        //user.setId(nextId++);// id automatico
+        userRepository.save(user);
     }
 
-    public Optional<User> buscarUser(Long nextId) {
-        return userList.stream()
-                .filter(user -> user.getId().equals(nextId))
-                .findFirst();
-    }
     public boolean updateUser(Long id, User userUpdate){
-        return userList.stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst()
+        return userRepository.findById(id)
                 .map(existingUser -> {
                     existingUser.setFristName(userUpdate.getFristName());
                     existingUser.setLastName(userUpdate.getLastName());
                     existingUser.setSenha(userUpdate.getSenha());
+                    userRepository.save(existingUser);
                     return true;})
                 .orElse(false);
     }
 
     public boolean deleteUser(Long id) {
-        return userList.removeIf(user -> user.getId().equals(id));
+        if(userRepository.existsById(id)){
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
