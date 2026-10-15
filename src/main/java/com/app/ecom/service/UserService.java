@@ -1,6 +1,6 @@
 package com.app.ecom.service;
 
-import com.app.ecom.User;
+import com.app.ecom.model.User;
 import com.app.ecom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,9 +32,8 @@ public class UserService {
     public boolean updateUser(Long id, User userUpdate){
         return userRepository.findById(id)
                 .map(existingUser -> {
-                    existingUser.setFristName(userUpdate.getFristName());
+                    existingUser.setFirstName(userUpdate.getFirstName());
                     existingUser.setLastName(userUpdate.getLastName());
-                    existingUser.setSenha(userUpdate.getSenha());
                     userRepository.save(existingUser);
                     return true;})
                 .orElse(false);

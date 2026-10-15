@@ -1,6 +1,6 @@
 package com.app.ecom.controller;
 
-import com.app.ecom.User;
+import com.app.ecom.model.User;
 import com.app.ecom.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
