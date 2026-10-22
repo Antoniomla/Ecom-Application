@@ -9,9 +9,11 @@ import com.app.ecom.repository.ProductRepository;
 import com.app.ecom.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -71,5 +73,11 @@ public class CartService {
             return  true;
         }
         return false;
+    }
+
+    public List<CartItem> getCart(String userId) {
+        return userRepository.findById(Long.valueOf(userId))
+                .map(cartItemRepository::findByUser)
+                .orElseGet(List::of);
     }
 }
